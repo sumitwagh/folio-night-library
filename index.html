@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Night Library — Folio concept 01</title>
+<meta name="description" content="Folio concept 01: an immersive 3D reading library.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app"></div>
+
+<!-- Screen markup. Holes like {{book.title}} come from bindings() in src/app.js. -->
+<template id="app-template">
+<div style="min-height:100vh;background:radial-gradient(1200px 700px at 50% 40%,#111733 0%,#070912 62%);color:#EDEAF5;font-family:Manrope,system-ui,sans-serif;overflow-x:clip;position:relative">
+
+<header style="position:relative;z-index:20;view-transition-name:hdr;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px clamp(16px,4vw,40px)">
+<button type="button" class="bt" onClick="{{toStacks}}" aria-label="The Night Library, go to the Stacks" style="display:flex;align-items:center;gap:12px;min-height:44px">
+<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3a13 13 0 1 0 9 22A11 11 0 0 1 16 3z" fill="#A9C4FF"/><circle cx="22" cy="9" r="2" fill="#FFB86B"/></svg>
+<span style="font:500 24px 'Cormorant Garamond',serif;letter-spacing:.01em">The Night Library</span>
+</button>
+<div class="hide-m" style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#A3A6BF">{{roomLabel}}</div>
+<button type="button" class="bt" onClick="{{toYou}}" aria-label="Your desk" style="display:flex;align-items:center;gap:10px;min-height:44px">
+<span class="hide-m" style="text-align:right;font-size:12px;line-height:1.3;color:#A3A6BF"><span style="display:block;color:#EDEAF5;font-weight:600">Aanya Rao</span>Level 7 · 23-night streak</span>
+<span style="width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#1C2240;border:1px solid #FFB86B;color:#FFB86B;font:600 20px 'Cormorant Garamond',serif">A</span>
+</button>
+</header>
+
+<main style="position:relative;z-index:5;padding:6px clamp(16px,4vw,40px) 150px;max-width:1360px;margin:0 auto">
+
+<show-if value="{{isStacks}}">
+<section class="room" aria-labelledby="stT">
+<div style="text-align:center;max-width:760px;margin:0 auto">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#FFB86B">THE STACKS · {{count}} BOOKS ON THIS SHELF</div>
+<h1 id="stT" style="margin:14px 0 0;font:500 clamp(40px,6vw,74px)/.98 'Cormorant Garamond',serif">Turn the shelf. <em style="color:#FFB86B">Take one down.</em></h1>
+<div role="group" aria-label="Shelf mood" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px">
+<for-each list="{{moods}}" as="m"><button type="button" class="bt pill" aria-pressed="{{m.on}}" onClick="{{m.pick}}" style="{{m.style}}">{{m.label}}</button></for-each>
+</div>
+</div>
+<div class="stage" onPointerDown="{{dDown}}" onPointerMove="{{dMove}}" onPointerUp="{{dUp}}" onPointerCancel="{{dUp}}" style="margin-top:28px">
+<div aria-hidden="true" style="position:absolute;left:50%;bottom:0;width:min(900px,90%);height:90px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,184,107,.22),transparent)"></div>
+<div class="ring" data-ring="1" style="transform:translateZ(calc(var(--R) * -1)) rotateY({{ringA}}deg)">
+<for-each list="{{shelf}}" as="b">
+<div class="item {{b.cls}}" style="transform:rotateY({{b.ang}}deg) translateZ(var(--R));opacity:{{b.op}}">
+<button type="button" class="bt" onClick="{{b.pick}}" aria-label="{{b.aria}}"><span class="cv" style="background:{{b.bg}};color:{{b.ink}}"><span style="position:absolute;background:{{b.ac}};{{b.sh}}"></span><span class="cvt"><span class="cvm">{{b.g}}</span><span class="cvn">{{b.t}}</span><span class="cvm">{{b.an}}</span></span></span></button>
+</div>
+</for-each>
+</div>
+</div>
+<div aria-live="polite" style="display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,28px);margin-top:6px">
+<button type="button" class="bt" onClick="{{prev}}" aria-label="Turn shelf left" style="flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:1px solid rgba(200,210,255,.22);display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div style="text-align:center;max-width:520px;min-width:0">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.2em;color:#A3A6BF">{{front.g}} · ★ {{front.r}} · {{front.rd}} READING TONIGHT</div>
+<h2 style="margin:8px 0 0;font:500 clamp(28px,3.6vw,40px)/1.05 'Cormorant Garamond',serif">{{front.t}}</h2>
+<button type="button" class="bt" onClick="{{frontAuthor}}" style="min-height:44px;font-size:15px;color:#A9C4FF;text-decoration:underline;text-underline-offset:4px">by {{front.an}}</button>
+<p style="margin:4px 0 0;font-size:14px;line-height:1.55;color:#C9C9DA"><span style="color:#FFB86B">Lumen:</span> {{front.why}}</p>
+</div>
+<button type="button" class="bt" onClick="{{next}}" aria-label="Turn shelf right" style="flex:0 0 auto;width:52px;height:52px;border-radius:50%;background:#EDEAF5;color:#070912;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px">
+<button type="button" class="bt pill pri" onClick="{{openFront}}">Take it down</button>
+<button type="button" class="bt pill ghost" aria-pressed="{{frontShelved}}" onClick="{{toggleFrontShelf}}">{{frontShelfLabel}}</button>
+</div>
+<p style="text-align:center;margin:14px 0 0;font-size:12px;color:#8C90AB">Drag or swipe the shelf, or use the arrows.</p>
+</section>
+</show-if>
+
+<show-if value="{{isBook}}">
+<section class="room" aria-labelledby="bkT">
+<button type="button" class="bt" onClick="{{toStacks}}" style="min-height:44px;font-size:14px;color:#A3A6BF">← Back to the stacks</button>
+<div class="cols" style="margin-top:10px">
+<div style="flex:1.1 1 420px;min-width:0;height:clamp(380px,52vw,560px);display:flex;align-items:center;justify-content:center;perspective:1800px;position:relative">
+<div aria-hidden="true" style="position:absolute;left:5%;right:5%;bottom:6%;height:40%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,184,107,.25),transparent)"></div>
+<div class="tbl" style="position:relative;width:calc(var(--cw)*1.55);height:calc(var(--ch)*1.55);transform-style:preserve-3d;transform:{{tblT}}">
+<div style="position:absolute;inset:0;transform:translateZ(-18px);background:{{bk.sp}};border-radius:3px 8px 8px 3px;box-shadow:0 60px 90px -30px #000"></div>
+<div style="position:absolute;inset:1.5% 1% 1.5% 0;transform:translateZ(16px);background:#F3ECDF;color:#2A2620;border-radius:0 5px 5px 0;padding:11% 9%;display:flex;flex-direction:column;gap:12px;box-shadow:inset 16px 0 26px -16px rgba(0,0,0,.4)">
+<div style="font:700 9px Manrope,sans-serif;letter-spacing:.2em;color:#8A6A2A">CHAPTER ONE</div>
+<p style="margin:0;font:500 clamp(15px,1.7vw,21px)/1.35 'Cormorant Garamond',serif">{{bk.l1}}</p>
+<p style="margin:0;font:500 clamp(13px,1.3vw,16px)/1.45 'Cormorant Garamond',serif;color:#5A5348">{{bk.l2}}</p>
+<div style="margin-top:auto;font:600 10px Manrope,sans-serif;color:#8A6A2A">p. 1 · {{bk.hl}} readers highlighted this</div>
+</div>
+<div class="lid" style="transform:translateZ(18px) rotateY({{lidA}}deg)">
+<div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:3px 8px 8px 3px;overflow:hidden;background:{{bk.bg}};color:{{bk.ink}}"><span style="position:absolute;background:{{bk.ac}};{{bk.sh}}"></span><span class="cvt"><span class="cvm" style="font-size:calc(var(--cw) * .07)">{{bk.g}}</span><span class="cvn" style="font-size:calc(var(--cw) * .23)">{{bk.t}}</span><span class="cvm" style="font-size:calc(var(--cw) * .07)">{{bk.an}}</span></span></div>
+<div style="position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;border-radius:8px 3px 3px 8px;background:{{bk.sp}};display:grid;place-items:center;font:italic 500 18px 'Cormorant Garamond',serif;color:rgba(255,255,255,.6)">for the ones who listen</div>
+</div>
+</div>
+</div>
+<div style="flex:1 1 380px;min-width:0">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#FFB86B">{{bk.g}} · ★ {{bk.r}} · {{bk.pg}} PAGES</div>
+<h1 id="bkT" style="margin:12px 0 0;font:500 clamp(40px,5vw,64px)/.96 'Cormorant Garamond',serif">{{bk.t}}</h1>
+<button type="button" class="bt" onClick="{{bookAuthor}}" style="min-height:44px;font-size:16px;color:#A9C4FF;text-decoration:underline;text-underline-offset:4px">by {{bk.an}}</button>
+<p style="margin:10px 0 0;font-size:16px;line-height:1.65;color:#C9C9DA">{{bk.blurb}}</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:22px">
+<button type="button" class="bt pill pri" onClick="{{toggleOpen}}">{{openLabel}}</button>
+<button type="button" class="bt pill ghost" aria-pressed="{{bkShelved}}" onClick="{{toggleBkShelf}}">{{bkShelfLabel}}</button>
+<button type="button" class="bt pill ghost" onClick="{{toBookRoom}}">Join tonight's room · {{bkRoomLive}}</button>
+</div>
+<div style="margin-top:30px;font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">MADE BY</div>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+<for-each list="{{credits}}" as="c">
+<button type="button" class="bt" onClick="{{c.pick}}" style="display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 14px 6px 6px;border-radius:999px;border:1px solid rgba(200,210,255,.14);background:rgba(16,20,38,.6)"><span style="width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:600 16px 'Cormorant Garamond',serif;background:{{c.bg}};color:#0B0D18">{{c.i}}</span><span style="font-size:13px;line-height:1.3"><span style="display:block;color:#EDEAF5;font-weight:600">{{c.n}}</span><span style="color:#A3A6BF">{{c.role}}</span></span></button>
+</for-each>
+</div>
+<show-if value="{{hasCredit}}"><div class="room" aria-live="polite" style="margin-top:12px;padding:12px 16px;border-radius:14px;border:1px solid rgba(169,196,255,.25);font-size:14px;line-height:1.5;color:#D9D8E6">{{creditNote}}</div></show-if>
+<div style="margin-top:24px;padding:16px 18px;border-radius:18px;background:rgba(255,184,107,.08);border:1px solid rgba(255,184,107,.25);font-size:14px;line-height:1.55;color:#E9E2D6"><span style="color:#FFB86B;font-weight:700">Lumen:</span> {{bk.why}}</div>
+</div>
+</div>
+</section>
+</show-if>
+
+<show-if value="{{isAuthors}}">
+<section class="room" aria-labelledby="agT">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+<div><div style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#FFB86B">THE PORTRAIT GALLERY</div><h1 id="agT" style="margin:12px 0 0;font:500 clamp(38px,5vw,64px)/1 'Cormorant Garamond',serif">Walk among the <em style="color:#FFB86B">writers</em>.</h1></div>
+<div style="display:flex;gap:10px"><button type="button" class="bt pill ghost" onClick="{{camBack}}" aria-label="Step back">← Step back</button><button type="button" class="bt pill pri" onClick="{{camFwd}}" aria-label="Walk forward">Walk forward →</button></div>
+</div>
+<div style="position:relative;height:clamp(360px,48vw,520px);perspective:900px;perspective-origin:50% 40%;margin-top:20px;overflow:hidden;border-radius:28px;background:linear-gradient(#0B0F22,#070912)">
+<div aria-hidden="true" style="position:absolute;left:-20%;right:-20%;bottom:-40%;height:70%;transform:rotateX(78deg);background-image:linear-gradient(rgba(169,196,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(169,196,255,.12) 1px,transparent 1px);background-size:70px 70px"></div>
+<div class="world" style="position:absolute;left:50%;top:14%;width:0;height:0;transform:translateZ({{camZ}}px)">
+<for-each list="{{gallery}}" as="p">
+<button type="button" class="bt fr" onClick="{{p.pick}}" aria-label="Visit {{p.n}}" tabindex="{{p.tab}}" style="position:absolute;left:-90px;top:0;width:180px;transform:{{p.tf}};opacity:{{p.op}};pointer-events:{{p.pe}};transition:opacity .6s">
+<span class="frame" style="height:220px;display:grid;place-items:center"><span style="font:500 76px/1 'Cormorant Garamond',serif;color:{{p.c}}">{{p.i}}</span></span>
+<span style="display:block;margin:12px auto 0;width:max-content;max-width:180px;padding:6px 12px;background:#C79A5B;color:#1A1006;font:700 11px Manrope,sans-serif;letter-spacing:.12em;text-transform:uppercase">{{p.n}}</span>
+</button>
+</for-each>
+</div>
+</div>
+<div role="group" aria-label="All authors" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:18px">
+<for-each list="{{gallery}}" as="p"><button type="button" class="bt pill ghost" onClick="{{p.pick}}">{{p.n}} · {{p.g}}</button></for-each>
+</div>
+</section>
+</show-if>
+
+<show-if value="{{isAuthor}}">
+<section class="room" aria-labelledby="auT">
+<button type="button" class="bt" onClick="{{toAuthors}}" style="min-height:44px;font-size:14px;color:#A3A6BF">← Back to the gallery</button>
+<div class="cols" style="margin-top:12px">
+<div style="flex:0 1 340px;min-width:260px">
+<div class="frame" style="aspect-ratio:4/5;display:grid;place-items:center;border-width:14px"><span style="font:500 140px/1 'Cormorant Garamond',serif;color:{{au.c}}">{{au.i}}</span></div>
+<div style="display:flex;justify-content:space-between;gap:10px;margin-top:20px;font-size:13px;color:#A3A6BF"><span><b style="display:block;font:500 28px 'Cormorant Garamond',serif;color:#EDEAF5">{{auFollowers}}</b>followers</span><span><b style="display:block;font:500 28px 'Cormorant Garamond',serif;color:#EDEAF5">{{au.inf}}</b>influence</span><span><b style="display:block;font:500 28px 'Cormorant Garamond',serif;color:#EDEAF5">{{au.logs}}</b>letters</span></div>
+</div>
+<div style="flex:1 1 440px;min-width:0">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#FFB86B">{{au.g}}</div>
+<h1 id="auT" style="margin:10px 0 0;font:500 clamp(44px,6vw,76px)/.95 'Cormorant Garamond',serif">{{au.n}}</h1>
+<p style="margin:14px 0 0;font-size:16px;line-height:1.65;color:#C9C9DA;max-width:560px">{{au.bio}}</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px"><button type="button" class="bt pill" aria-pressed="{{auFollowOn}}" onClick="{{toggleFollow}}" style="{{auFollowStyle}}">{{auFollowLabel}}</button><button type="button" class="bt pill ghost" onClick="{{toAuthorRoom}}">Visit their reading room</button></div>
+<div style="margin-top:32px;display:flex;justify-content:space-between;align-items:center;gap:10px"><div style="font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">LETTERS · DAILY STORIES</div><button type="button" class="bt pill ghost" onClick="{{nextLetter}}">Next letter →</button></div>
+<div class="letters" style="position:relative;height:250px;margin-top:16px;perspective:1200px">
+<for-each list="{{letters}}" as="l">
+<button type="button" class="bt paper" onClick="{{l.pick}}" aria-label="Read letter {{l.no}}" style="position:absolute;left:0;right:0;top:0;max-width:560px;padding:24px 26px;border-radius:4px;background:#F3ECDF;color:#2A2620;box-shadow:0 30px 50px -24px #000;transform:{{l.tf}};opacity:{{l.op}};z-index:{{l.z}}">
+<span style="display:flex;justify-content:space-between;font:700 10px Manrope,sans-serif;letter-spacing:.16em;color:#8A6A2A"><span>{{l.no}}</span><span>{{l.when}}</span></span>
+<span style="display:block;margin-top:12px;font:500 22px/1.32 'Cormorant Garamond',serif">{{l.text}}</span>
+<span style="display:block;margin-top:12px;font:600 12px Manrope,sans-serif;color:#7A3B12">{{l.badge}}</span>
+</button>
+</for-each>
+</div>
+<div style="margin-top:10px;font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">ON THE SHELF</div>
+<div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:14px;--cw:96px;--ch:144px">
+<for-each list="{{auBooks}}" as="b"><button type="button" class="bt" onClick="{{b.pick}}" aria-label="Open {{b.t}}"><span class="cv" style="background:{{b.bg}};color:{{b.ink}}"><span style="position:absolute;background:{{b.ac}};{{b.sh}}"></span><span class="cvt"><span class="cvn" style="font-size:15px">{{b.t}}</span></span></span></button></for-each>
+<show-if value="{{hasUp}}"><div style="flex:1 1 220px;padding:16px 18px;border-radius:16px;border:1px dashed rgba(255,184,107,.5);align-self:center"><div style="font:600 11px Manrope,sans-serif;letter-spacing:.18em;color:#FFB86B">FORTHCOMING · {{au.upWhen}}</div><div style="margin-top:6px;font:500 24px 'Cormorant Garamond',serif">{{au.up}}</div><button type="button" class="bt pill ghost" aria-pressed="{{notifyOn}}" onClick="{{toggleNotify}}" style="margin-top:10px">{{notifyLabel}}</button></div></show-if>
+</div>
+</div>
+</div>
+</section>
+</show-if>
+
+<show-if value="{{isCommons}}">
+<section class="room" aria-labelledby="cmT">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#FFB86B">THE COMMONS · {{liveTotal}} READERS INSIDE</div>
+<h1 id="cmT" style="margin:12px 0 0;font:500 clamp(38px,5vw,64px)/1 'Cormorant Garamond',serif">Every lit window is a <em style="color:#FFB86B">reading room</em>.</h1>
+<div class="cols" style="margin-top:26px">
+<div style="flex:1 1 420px;min-width:0;padding:26px;border-radius:26px 26px 8px 8px;background:#121731;border:1px solid rgba(200,210,255,.1)">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,2vw,20px)">
+<for-each list="{{rooms}}" as="r">
+<button type="button" class="bt" onClick="{{r.pick}}" aria-pressed="{{r.on}}" aria-label="{{r.n}}, {{r.live}} inside" style="display:block">
+<span class="win" style="display:block;background:{{r.light}};{{r.ring}}"><span aria-hidden="true" style="position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#2A2F48"></span><span aria-hidden="true" style="position:absolute;left:0;right:0;top:46%;height:3px;background:#2A2F48"></span></span>
+<span style="display:block;margin-top:8px;font-size:12px;line-height:1.3;color:#C9C9DA;text-align:center">{{r.short}}</span><span style="display:block;font:700 11px Manrope,sans-serif;color:#FFB86B;text-align:center">{{r.live}}</span>
+</button>
+</for-each>
+</div>
+<div aria-hidden="true" style="margin:22px -26px -26px;height:28px;background:#0B0E1F;border-top:3px solid #2A2F48"></div>
+</div>
+<div style="flex:1 1 420px;min-width:0">
+<show-if value="{{noRoom}}"><div style="padding:30px;border-radius:24px;border:1px dashed rgba(200,210,255,.2);color:#A3A6BF;font-size:15px;line-height:1.6">Pick a window. The brighter it glows, the more people are reading and talking inside.</div></show-if>
+<show-if value="{{hasRoom}}">
+<div class="room" style="padding:26px;border-radius:24px;background:rgba(16,20,38,.85);border:1px solid rgba(200,210,255,.12)">
+<div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><div style="font:600 11px Manrope,sans-serif;letter-spacing:.2em;color:#FFB86B">{{rm.kind}} · {{rm.live}} INSIDE</div><h2 style="margin:8px 0 0;font:500 30px/1.1 'Cormorant Garamond',serif">{{rm.n}}</h2></div><button type="button" class="bt" onClick="{{closeRoom}}" aria-label="Leave room" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(200,210,255,.2);font-size:20px">×</button></div>
+<div aria-hidden="true" style="position:relative;width:200px;height:120px;margin:18px auto 4px"><div style="position:absolute;left:40px;top:30px;width:120px;height:60px;border-radius:50%;background:#2A1E10;box-shadow:0 0 40px rgba(255,184,107,.35)"></div><for-each list="{{seats}}" as="s"><span style="position:absolute;width:26px;height:26px;border-radius:50%;background:{{s.c}};border:2px solid #070912;left:{{s.x}}px;top:{{s.y}}px"></span></for-each></div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-top:10px;max-height:300px;overflow:auto">
+<for-each list="{{msgs}}" as="m"><div class="room" style="display:flex;gap:10px"><span style="flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 15px 'Cormorant Garamond',serif;background:{{m.c}};color:#0B0D18">{{m.i}}</span><div style="font-size:14px;line-height:1.5"><b>{{m.who}}</b> <span style="font-size:11px;color:#FFB86B;font-weight:700">{{m.tag}}</span><br><span style="color:#D9D8E6">{{m.text}}</span></div></div></for-each>
+</div>
+<div style="margin-top:14px;padding:12px 14px;border-radius:14px;background:rgba(255,184,107,.07);font-size:14px;line-height:1.5;color:#E9E2D6">
+<show-if value="{{digIdle}}"><button type="button" class="bt" onClick="{{digest}}" style="min-height:40px;color:#FFB86B;font-weight:700">Ask Lumen to catch me up →</button></show-if>
+<show-if value="{{digThinking}}"><span class="dots" aria-label="Thinking"><span></span><span style="animation-delay:.15s"></span><span style="animation-delay:.3s"></span></span> Reading {{rm.count}} messages…</show-if>
+<show-if value="{{digDone}}"><span class="room" style="display:block"><b style="color:#FFB86B">Lumen:</b> {{rm.digest}}</span></show-if>
+</div>
+<div style="display:flex;gap:10px;margin-top:14px"><label style="flex:1"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Say something to the room</span><input type="text" value="{{draft}}" onChange="{{onDraft}}" placeholder="Say something to the room…" style="width:100%;height:48px;padding:0 16px;border-radius:999px;border:1px solid rgba(200,210,255,.2);background:rgba(7,9,18,.6);color:#EDEAF5;font:400 14px Manrope,sans-serif"></label><button type="button" class="bt pill pri" onClick="{{send}}">Send</button></div>
+</div>
+</show-if>
+</div>
+</div>
+</section>
+</show-if>
+
+<show-if value="{{isHall}}">
+<section class="room" aria-labelledby="hlT">
+<div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px">
+<div><div style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#FFB86B">THE HALL OF LANTERNS · THIS WEEK</div><h1 id="hlT" style="margin:12px 0 0;font:500 clamp(38px,5vw,64px)/1 'Cormorant Garamond',serif">The brightest lanterns <em style="color:#FFB86B">rise highest</em>.</h1></div>
+<div role="group" aria-label="Lantern category" style="display:flex;flex-wrap:wrap;gap:8px"><for-each list="{{hallCats}}" as="c"><button type="button" class="bt pill" aria-pressed="{{c.on}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button></for-each></div>
+</div>
+<div style="position:relative;margin-top:26px;padding:30px clamp(8px,3vw,30px) 0;border-radius:28px;background:linear-gradient(#0B0F22,#090C1A);perspective:1100px;overflow:hidden">
+<div style="display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,2.4vw,28px);height:420px;transform:rotateX(10deg);transform-origin:bottom">
+<for-each list="{{lanterns}}" as="l">
+<button type="button" class="bt lb" onClick="{{l.pick}}" aria-label="{{l.aria}}" style="flex:1 1 0;max-width:120px;display:flex;flex-direction:column;align-items:center;gap:8px">
+<span style="font:600 13px Manrope,sans-serif;color:#FFB86B">{{l.score}}</span>
+<span class="lan" style="position:relative;display:block;width:100%;height:{{l.h}}px;border-radius:14px 14px 4px 4px;background:{{l.bg}};border:1px solid rgba(255,184,107,.35)"><span aria-hidden="true" style="position:absolute;left:50%;top:-10px;width:60%;height:20px;margin-left:-30%;border-radius:50%;background:#FFD9A8;filter:blur(8px);opacity:{{l.glow}}"></span><span style="position:absolute;left:0;right:0;top:12px;text-align:center;font:500 30px 'Cormorant Garamond',serif;color:#1A0F02">{{l.rank}}</span></span>
+<span style="width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font:600 17px 'Cormorant Garamond',serif;background:{{l.c}};color:#0B0D18">{{l.i}}</span>
+<span style="font-size:12px;line-height:1.25;text-align:center;color:#D9D8E6;min-height:30px">{{l.n}}</span>
+</button>
+</for-each>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;margin-top:18px;padding:18px 22px;border-radius:20px;border:1px solid rgba(255,184,107,.3);background:rgba(255,184,107,.06)">
+<div style="font-size:15px;line-height:1.5"><b style="color:#FFB86B">Your lantern:</b> #318 of 3,402 readers — up 41 places. Finish one more book this week to reach the upper hall.</div>
+<button type="button" class="bt pill pri" onClick="{{toYou}}">Go to my desk</button>
+</div>
+</section>
+</show-if>
+
+<show-if value="{{isYou}}">
+<section class="room" aria-labelledby="yuT">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.24em;color:#FFB86B">YOUR DESK · LEVEL 7 READER</div>
+<h1 id="yuT" style="margin:12px 0 0;font:500 clamp(38px,5vw,64px)/1 'Cormorant Garamond',serif">Good evening, <em style="color:#FFB86B">Aanya</em>.</h1>
+<div class="cols" style="margin-top:26px">
+<div style="flex:1.3 1 460px;min-width:0">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">YOUR SHELF · RIBBONS SHOW HOW FAR YOU ARE</div>
+<div style="display:flex;align-items:flex-end;gap:6px;min-height:280px;margin-top:16px;padding:0 10px;overflow-x:auto">
+<for-each list="{{myShelf}}" as="s">
+<button type="button" class="bt spn" onClick="{{s.pick}}" aria-label="{{s.t}}, {{s.p}}% read" style="position:relative;flex:0 0 auto;width:{{s.w}}px;height:{{s.h}}px;border-radius:3px 3px 1px 1px;background:{{s.bg}};color:{{s.ink}};box-shadow:inset -6px 0 12px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">
+<span style="writing-mode:vertical-rl;transform:rotate(180deg);font:500 17px 'Cormorant Garamond',serif;white-space:nowrap">{{s.t}}</span>
+<span aria-hidden="true" style="position:absolute;right:6px;top:-2px;width:8px;height:{{s.rib}}%;background:#C6463A;clip-path:polygon(0 0,100% 0,100% 100%,50% 88%,0 100%)"></span>
+</button>
+</for-each>
+</div>
+<div aria-hidden="true" style="height:16px;border-radius:3px;background:#2A1E10;box-shadow:0 2px 0 rgba(255,184,107,.5) inset,0 30px 50px -16px rgba(255,184,107,.25)"></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px">
+<div style="padding:16px;border-radius:16px;background:rgba(16,20,38,.7)"><div style="font:500 34px 'Cormorant Garamond',serif">23</div><div style="font-size:12px;color:#A3A6BF">books this year</div></div>
+<div style="padding:16px;border-radius:16px;background:rgba(16,20,38,.7)"><div style="font:500 34px 'Cormorant Garamond',serif">6,412</div><div style="font-size:12px;color:#A3A6BF">pages turned</div></div>
+<div style="padding:16px;border-radius:16px;background:rgba(16,20,38,.7)"><div style="font:500 34px 'Cormorant Garamond',serif">{{shelfCount}}</div><div style="font-size:12px;color:#A3A6BF">on your shelf now</div></div>
+</div>
+</div>
+<div style="flex:1 1 340px;min-width:0">
+<div style="font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">THIS WEEK'S CANDLES</div>
+<div style="display:flex;gap:10px;margin-top:14px" aria-label="Read 6 of the last 7 nights" role="img">
+<for-each list="{{candles}}" as="c"><span style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1"><span style="width:14px;height:20px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:{{c.flame}};box-shadow:{{c.glow}}"></span><span style="width:18px;height:48px;border-radius:3px;background:#E9E1D3;opacity:{{c.op}}"></span><span style="font-size:11px;color:#8C90AB">{{c.d}}</span></span></for-each>
+</div>
+<div style="margin-top:26px;font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">SEALS YOU'VE EARNED</div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px">
+<for-each list="{{seals}}" as="s"><button type="button" class="bt seal" onClick="{{s.pick}}" aria-pressed="{{s.on}}" aria-label="{{s.n}}, {{s.state}}" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:14px;{{s.sel}}"><span style="width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font:600 22px 'Cormorant Garamond',serif;{{s.look}}">{{s.mark}}</span><span style="font-size:12px;text-align:center;line-height:1.25">{{s.n}}</span></button></for-each>
+</div>
+<div aria-live="polite" style="margin-top:12px;padding:14px 16px;border-radius:14px;background:rgba(16,20,38,.7);font-size:14px;line-height:1.5;color:#D9D8E6">{{sealNote}}</div>
+<div style="margin-top:22px;font:600 11px Manrope,sans-serif;letter-spacing:.22em;color:#A3A6BF">YOUR ROOMS</div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px"><for-each list="{{myRooms}}" as="r"><button type="button" class="bt" onClick="{{r.pick}}" style="display:flex;justify-content:space-between;gap:10px;min-height:48px;padding:0 16px;align-items:center;border-radius:14px;border:1px solid rgba(200,210,255,.14)"><span>{{r.n}}</span><span style="color:#FFB86B;font-weight:700;font-size:13px">{{r.live}} inside →</span></button></for-each></div>
+</div>
+</div>
+</section>
+</show-if>
+</main>
+
+<nav class="dock" aria-label="Rooms" style="position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:40;view-transition-name:dock;display:flex;gap:4px;padding:6px;border-radius:999px;background:rgba(12,15,32,.82);backdrop-filter:blur(14px);border:1px solid rgba(200,210,255,.14);box-shadow:0 20px 50px -20px #000;max-width:calc(100% - 96px)">
+<for-each list="{{dock}}" as="d">
+<button type="button" class="bt" onClick="{{d.pick}}" aria-current="{{d.cur}}" aria-label="{{d.label}}" style="display:flex;align-items:center;gap:8px;height:48px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:600;transition:background .3s,color .3s;{{d.style}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path data-svg-d="{{d.icon}}"/></svg><span class="dl">{{d.label}}</span></button>
+</for-each>
+</nav>
+
+<button type="button" class="bt lamp" onClick="{{toggleLamp}}" aria-expanded="{{lampExp}}" aria-label="Ask Lumen, your reading companion" style="position:fixed;right:clamp(12px,3vw,32px);bottom:18px;z-index:41;view-transition-name:lamp;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#FFE2B8,#FFB86B 55%,#C77A2E);box-shadow:0 0 40px rgba(255,184,107,.5);display:grid;place-items:center;color:#1A0F02"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l1.8 4.9L19 9.7l-4.2 3.2 1.4 5.1L12 15.2 7.8 18l1.4-5.1L5 9.7l5.2-1.8z"/></svg></button>
+<show-if value="{{lampOpen}}">
+<div class="room" role="dialog" aria-label="Lumen, your reading companion" style="position:fixed;right:clamp(12px,3vw,32px);bottom:88px;z-index:42;width:min(380px,calc(100% - 24px));padding:22px;border-radius:22px;background:rgba(14,17,36,.96);border:1px solid rgba(255,184,107,.3);box-shadow:0 30px 70px -20px #000">
+<div style="display:flex;justify-content:space-between;align-items:center"><div style="font:500 24px 'Cormorant Garamond',serif">Lumen</div><button type="button" class="bt" onClick="{{toggleLamp}}" aria-label="Close Lumen" style="width:40px;height:40px;border-radius:50%;font-size:20px">×</button></div>
+<p style="margin:6px 0 0;font-size:14px;line-height:1.55;color:#C9C9DA">I've read your last 214 highlights. What are you in the mood for?</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px"><for-each list="{{asks}}" as="q"><button type="button" class="bt" onClick="{{q.pick}}" style="min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,184,107,.35);font-size:13px;color:#FFD9A8">{{q.label}}</button></for-each></div>
+<show-if value="{{lampThinking}}"><div style="margin-top:16px;font-size:14px;color:#C9C9DA"><span class="dots" aria-hidden="true"><span></span><span style="animation-delay:.15s"></span><span style="animation-delay:.3s"></span></span> Walking the stacks…</div></show-if>
+<show-if value="{{lampDone}}"><div class="room" aria-live="polite" style="margin-top:16px;padding:14px;border-radius:16px;background:rgba(255,184,107,.08)"><div style="font-size:14px;line-height:1.55">{{ans.text}}</div><button type="button" class="bt pill pri" onClick="{{ans.go}}" style="margin-top:12px">Show me {{ans.t}}</button></div></show-if>
+</div>
+</show-if>
+
+<show-if value="{{cardOpen}}">
+<div class="scrim" role="dialog" aria-modal="true" aria-label="Reader profile, {{rc.n}}">
+<div class="room" style="width:min(440px,100%);padding:28px;border-radius:26px;background:#0F1330;border:1px solid rgba(200,210,255,.16)">
+<div style="display:flex;justify-content:space-between;align-items:flex-start"><span style="width:72px;height:72px;border-radius:50%;display:grid;place-items:center;font:500 32px 'Cormorant Garamond',serif;background:{{rc.c}};color:#0B0D18">{{rc.i}}</span><button type="button" class="bt" onClick="{{closeCard}}" aria-label="Close" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(200,210,255,.2);font-size:20px">×</button></div>
+<h2 style="margin:14px 0 0;font:500 32px 'Cormorant Garamond',serif">{{rc.n}}</h2>
+<div style="font-size:14px;color:#A3A6BF">{{rc.meta}}</div>
+<div style="margin-top:16px;font:600 11px Manrope,sans-serif;letter-spacing:.2em;color:#A3A6BF">READING NOW</div>
+<div style="display:flex;gap:12px;margin-top:10px;--cw:70px;--ch:105px"><for-each list="{{rcBooks}}" as="b"><button type="button" class="bt" onClick="{{b.pick}}" aria-label="Open {{b.t}}"><span class="cv" style="background:{{b.bg}}"><span style="position:absolute;background:{{b.ac}};{{b.sh}}"></span></span></button></for-each></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:16px"><for-each list="{{rcBadges}}" as="g"><span style="padding:6px 10px;border-radius:999px;background:rgba(255,184,107,.12);color:#FFD9A8;font-size:12px;font-weight:600">{{g.n}}</span></for-each></div>
+<button type="button" class="bt pill" aria-pressed="{{rcFollowOn}}" onClick="{{rcFollow}}" style="margin-top:18px;width:100%;{{rcFollowStyle}}">{{rcFollowLabel}}</button>
+</div>
+</div>
+</show-if>
+</div>
+</template>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
