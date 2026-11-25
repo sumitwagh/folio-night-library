@@ -273,7 +273,7 @@ async function start3D() {
       const shelfOn = S.route === 'shelf';
       shelf.visible += ((shelfOn ? 1 : 0) - shelf.visible) * k;
       pos = wide ? V3(stage.pointer.sx * 0.5, 1.5 + stage.pointer.sy * 0.2, 15.5) : V3(0, 1.6, 24);
-      look = wide ? V3(0, -0.5, -1) : V3(0, 0.2, -1);
+      look = wide ? V3(0, -0.85, -1) : V3(0, 0.0, -1);
       if (!shelfOn) { pos = V3(pos.x, pos.y + 6, pos.z + 4); }
       stage.bgU.uDim.value += ((shelfOn ? 1 : 0.92) - stage.bgU.uDim.value) * k;
     }

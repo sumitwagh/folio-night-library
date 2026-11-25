@@ -62,23 +62,27 @@ export function paintCover(bk, { w = 512, h = 768, canvas } = {}) {
     case 'rings': g.lineWidth = 2 * s; for (let r = 12 * s; r < w * 0.7; r += 20 * s) { g.beginPath(); g.ellipse(w * 0.5, h * 0.5, r, r * 0.66, 0, 0, Math.PI * 2); g.stroke(); } break;
   }
   g.restore();
-  // type
+  // type — weighted and shadowed so it stays readable on a 3D cover at any hour
   const pad = w * 0.12;
+  const lum = (hx) => { const n = parseInt(hx.slice(1), 16); return (0.2126 * (n >> 16) + 0.7152 * ((n >> 8) & 255) + 0.0722 * (n & 255)) / 255; };
+  const lightInk = lum(b.ink) > 0.5;
+  const scrim = g.createLinearGradient(0, h * 0.5, 0, h);
+  scrim.addColorStop(0, b.bg + '00'); scrim.addColorStop(0.55, b.bg + 'B3'); scrim.addColorStop(1, b.bg + 'E6');
+  g.fillStyle = scrim; g.fillRect(0, h * 0.5, w, h * 0.5);
+  g.shadowColor = lightInk ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.45)';
+  g.shadowBlur = 10 * s;
   g.fillStyle = b.ink;
-  g.font = `500 ${Math.round(15 * s)}px 'JetBrains Mono', monospace`;
-  g.globalAlpha = 0.85;
-  g.fillText(b.genre.toUpperCase().split('').join(String.fromCharCode(8202)), pad, pad + 10 * s);
-  g.globalAlpha = 1;
-  const size = Math.round((b.title.length > 24 ? 64 : 76) * s);
-  g.font = `400 ${size}px 'Cormorant Garamond', serif`;
+  g.font = `700 ${Math.round(17 * s)}px Manrope, sans-serif`;
+  g.fillText(b.genre.toUpperCase().split('').join(String.fromCharCode(8202)), pad, pad + 12 * s);
+  const size = Math.round((b.title.length > 24 ? 70 : 84) * s);
+  g.font = `600 ${size}px 'Cormorant Garamond', serif`;
   const lines = wrap(g, b.title, w - pad * 2);
-  const lh = size * 0.94;
-  const top = h - pad - 34 * s - lh * (lines.length - 1);
+  const lh = size * 0.92;
+  const top = h - pad - 40 * s - lh * (lines.length - 1);
   lines.forEach((l, i) => g.fillText(l, pad, top + i * lh));
-  g.font = `600 ${Math.round(16 * s)}px Manrope, sans-serif`;
-  g.globalAlpha = 0.85;
+  g.font = `700 ${Math.round(18 * s)}px Manrope, sans-serif`;
   g.fillText(b.author.toUpperCase(), pad, h - pad + 4 * s);
-  g.globalAlpha = 1;
+  g.shadowBlur = 0; g.shadowColor = 'transparent';
   // spine shading + sheen
   const sh = g.createLinearGradient(0, 0, w, 0);
   sh.addColorStop(0, 'rgba(0,0,0,.35)'); sh.addColorStop(0.05, 'rgba(255,255,255,.12)'); sh.addColorStop(0.09, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.18)');

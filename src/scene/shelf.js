@@ -54,8 +54,11 @@ export class Shelf {
     const edgeMat = new THREE.MeshStandardMaterial({ map: edge, roughness: 0.9 });
     const geo = new THREE.BoxGeometry(W, H, T);
     this.items = books.map((b, i) => {
-      const cover = new THREE.MeshStandardMaterial({ map: canvasTex(paintCover(b, { w: 512, h: 768 })), roughness: 0.5 });
-      const spine = new THREE.MeshStandardMaterial({ map: canvasTex(paintSpine(b, { w: 96, h: 768 })), roughness: 0.55 });
+      const ctex = canvasTex(paintCover(b, { w: 768, h: 1152 }));
+      ctex.generateMipmaps = true;
+      const cover = new THREE.MeshStandardMaterial({ map: ctex, roughness: 0.6, emissive: 0xffffff, emissiveMap: ctex, emissiveIntensity: 0.32 });
+      const stex = canvasTex(paintSpine(b, { w: 128, h: 1024 }));
+      const spine = new THREE.MeshStandardMaterial({ map: stex, roughness: 0.55, emissive: 0xffffff, emissiveMap: stex, emissiveIntensity: 0.22 });
       const back = new THREE.MeshStandardMaterial({ color: b.sp, roughness: 0.7 });
       const m = new THREE.Mesh(geo, [edgeMat, spine, edgeMat, edgeMat, cover, back]);
       m.castShadow = true; m.receiveShadow = true;

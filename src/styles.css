@@ -54,19 +54,19 @@ html.no-gl body{background:radial-gradient(60% 55% at 50% 35%,var(--sky),var(--w
 
 /* --------------------------------------------------- shelf */
 .r-shelf{pointer-events:none}
-.shelf-head{position:absolute;left:28px;top:96px;max-width:360px}
-.shelf-h{margin:12px 0 0;font:500 clamp(38px,4vw,60px)/.95 var(--serif);letter-spacing:-.01em}
+.shelf-head{position:absolute;left:28px;top:84px;max-width:360px}
+.shelf-h{margin:10px 0 0;font:500 clamp(32px,3.3vw,48px)/.95 var(--serif);letter-spacing:-.01em}
 .moods{position:absolute;right:28px;top:100px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:420px}
 .moods button{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);backdrop-filter:blur(10px);font:600 12px var(--sans);color:var(--ink2);cursor:pointer;pointer-events:auto;transition:all .35s}
 .moods button[aria-pressed="true"]{background:var(--ink);color:var(--wall);border-color:var(--ink)}
-.cap{position:absolute;left:50%;bottom:178px;transform:translateX(-50%);display:flex;align-items:center;gap:26px;width:min(820px,94vw)}
+.cap{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);display:flex;align-items:center;gap:26px;width:min(820px,94vw)}
 .cap-in{flex:1;text-align:center;min-width:0}
 .cap-k{font:500 10.5px var(--mono);letter-spacing:.12em;color:var(--ink2)}
 .cap-t{margin:6px 0 0;font:500 clamp(30px,3vw,44px)/1 var(--serif)}
 .cap-a{display:inline-block;margin-top:6px;font:500 italic 19px var(--serif);color:var(--ink2);pointer-events:auto}
 .cap-b{display:flex;justify-content:center;gap:8px;margin-top:14px}
 .cap-b .pill{height:42px;font-size:13px}
-.dial{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);width:min(1120px,92vw);padding:12px 0 0;cursor:ew-resize;touch-action:none;outline-offset:6px}
+.dial{position:absolute;left:50%;bottom:80px;transform:translateX(-50%);width:min(1120px,92vw);padding:12px 0 0;cursor:ew-resize;touch-action:none;outline-offset:6px}
 .dial-track{position:relative;height:34px;border-bottom:1px solid var(--line)}
 .dial-track i{position:absolute;bottom:0;width:1px;height:8px;background:var(--ink3)}
 .dial-track i.big{height:16px;background:var(--ink2)}
@@ -249,7 +249,7 @@ a:hover .b3-in{transform:rotateY(4deg) translateZ(20px) translateY(-4px)}
   .shelf-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .moods{left:0;right:0;top:122px;flex-wrap:nowrap;justify-content:flex-start;max-width:none;overflow-x:auto;padding:0 16px;scrollbar-width:none;pointer-events:auto}
   .moods button{flex:0 0 auto}
-  .cap{bottom:170px;gap:10px}.cap-t{font-size:26px}.cap-k{font-size:9.5px}.arw{width:42px;height:42px}
+  .cap{bottom:158px;gap:10px}.cap-t{font-size:26px}.cap-k{font-size:9.5px}.arw{width:42px;height:42px}
   .cap-b .pill{height:40px;padding:0 16px}
   .dial{bottom:78px;width:94vw}.dial-l span:nth-child(2n){display:none}
   .hint{display:none}
