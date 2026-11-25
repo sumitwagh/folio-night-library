@@ -42,7 +42,7 @@ const ORDER = ['moons', 'saltwind', 'km', 'wander', 'nine', 'field', 'monsoon', 
 
 for (const [k, b] of Object.entries(CORE)) BOOKS[k] = { id: k, ...b, motif: MOTIF[k], scene: SCENE[k], hook: b.l1 };
 for (const [id, t, a, g, mood, bg, ac, ink, sp, motif, r, pg, rd, hook, blurb, scene] of MORE) {
-  BOOKS[id] = { id, t, a, an: A[a].n, g, mood, bg, ac, ink, sp, motif, r, pg, rd, hl: Math.round(pg / 3), room: 'r7', blurb, l1: hook, l2: blurb, hook, why: 'readers who share your late-night hours rated it highly.', cr: [['Editor', 'Folio Editions']], scene, upcoming: id === 'quiet' };
+  BOOKS[id] = { id, t, a, an: A[a].n, g, mood, bg, ac, ink, sp, motif, r, pg, rd, hl: Math.round(pg / 3), room: 'r7', blurb, l1: hook, l2: blurb, hook, why: 'readers who share your late-night hours rated it highly.', cr: [['Editor', 'Nocturne Editions']], scene, upcoming: id === 'quiet' };
 }
 ORDER.forEach((id, i) => { BOOKS[id].hour = hours[i]; BOOKS[id].no = String(i + 1).padStart(3, '0'); BOOKS[id].chapters = CHAPTERS[id] || GENERIC; });
 
@@ -75,4 +75,4 @@ export const ASKS = [
   ['What is Kabir reading?', 'weight', 'Kabir is 81% into The Weight of Light. Your tastes match 91%, and he gave it five stars.'],
 ];
 
-export const SEALS = [['Night Owl II', '☾', 'Read past midnight on 20 nights.', 1], ['First Review', '✎', 'Wrote your first review, of Cartographer.', 1], ['23 Nights', '✦', 'Read 23 nights in a row — your longest streak.', 1], ['Trendsetter', '↗', 'Shelved a book before it hit the top 10.', 1], ['Q&A Regular', '?', 'Attend three author Q&As (2 of 3).', 0], ['Century Club', 'C', 'Read 100 books on Folio (23 of 100).', 0]];
+export const SEALS = [['Night Owl II', '☾', 'Read past midnight on 20 nights.', 1], ['First Review', '✎', 'Wrote your first review, of Cartographer.', 1], ['23 Nights', '✦', 'Read 23 nights in a row — your longest streak.', 1], ['Trendsetter', '↗', 'Shelved a book before it hit the top 10.', 1], ['Q&A Regular', '?', 'Attend three author Q&As (2 of 3).', 0], ['Century Club', 'C', 'Read 100 books on Nocturne (23 of 100).', 0]];

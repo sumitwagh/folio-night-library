@@ -52,7 +52,7 @@ export function paintCoverPage(book) {
   g.font = "600 20px Manrope, sans-serif";
   g.fillText(book.an.toUpperCase().split('').join(' '), PW / 2, 520 + lines.length * 78 + 30);
   g.font = "500 16px Manrope, sans-serif"; g.globalAlpha = 0.8;
-  g.fillText(`FOLIO · THE NIGHT LIBRARY · NO. ${book.no}`, PW / 2, PH - 110);
+  g.fillText(`NOCTURNE · NO. ${book.no}`, PW / 2, PH - 110);
   return c;
 }
 

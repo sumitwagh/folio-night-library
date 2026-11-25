@@ -1,4 +1,4 @@
-/* The Night Library — one design language for every hour. Colours come from night.js as CSS
+/* Nocturne — one design language for every hour. Colours come from night.js as CSS
    variables on <html> (--wall, --ink, --accent …) and shift continuously from dusk to dawn. */
 :root{--wall:#262A40;--wall2:#2e334c;--card:rgba(14,16,28,.72);--ink:#EEE7DA;--ink2:rgba(238,231,218,.66);--ink3:rgba(238,231,218,.42);--line:rgba(238,231,218,.14);--accent:#FFB86B;--accent-ink:#1A0F02;
   --serif:'Cormorant Garamond',Georgia,serif;--sans:Manrope,system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;--settle:cubic-bezier(.16,1,.3,1)}

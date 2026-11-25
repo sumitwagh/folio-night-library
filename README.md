@@ -1,4 +1,4 @@
-# Folio · The Night Library
+# Nocturne
 
 A 3D library that runs from dusk till dawn. The whole interface follows the hour: warm plaster at
 golden hour, blue hour, lamplit midnight, then a rose dawn. It starts at your real local time

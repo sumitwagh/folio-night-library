@@ -1,9 +1,9 @@
 {
-  "name": "folio-night-library",
+  "name": "nocturne",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Folio \u00b7 The Night Library: a 3D library from dusk till dawn \u2014 a turning shelf, a book you read through the night, author niches and lit reading rooms.",
+  "description": "Nocturne: a 3D library from dusk till dawn \u2014 a turning shelf, a book you read through the night, author niches and lit reading rooms.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

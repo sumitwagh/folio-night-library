@@ -23,9 +23,9 @@ export function chrome(s, night) {
   const tabs = [['shelf', 'Shelf', '#/'], ['authors', 'Authors', '#/authors'], ['rooms', 'Rooms', '#/rooms'], ['lanterns', 'Lanterns', '#/lanterns'], ['desk', 'Desk', '#/desk']];
   return `
   <header class="top">
-    <a href="#/" class="mark" aria-label="The Night Library, home">
-      <svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M5 20a12 12 0 0 1 24 0" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M17 4v-3M8.5 7.5 6.4 5.4M25.5 7.5l2.1-2.1M3.5 15H1M33 15h-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="17" cy="20" r="5.5" fill="currentColor"/></svg>
-      <span class="mark-w">The Night Library</span>
+    <a href="#/" class="mark" aria-label="Nocturne, home">
+      <svg width="26" height="30" viewBox="0 0 26 30" aria-hidden="true"><path d="M2 29V13a11 11 0 0 1 22 0v16z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="13" r="4.5" fill="currentColor"/><circle cx="14.4" cy="11.4" r="4" fill="var(--wall)"/><path d="M6 29v-6M9.5 29v-8M13 29v-5M16.5 29v-7M20 29v-5" stroke="var(--accent)" stroke-width="2"/></svg>
+      <span class="mark-w">Nocturne</span>
     </a>
     <button type="button" class="clock" data-act="clock" aria-label="It is ${clockOf(s.hour)} in the library, ${esc(night.name)}. Change the hour">
       <span class="clock-d" style="--a:${((s.hour - 18) / 12) * 180}deg"></span><b>${clockOf(s.hour)}</b><span>${esc(night.name)}</span>
